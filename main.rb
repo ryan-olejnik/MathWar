@@ -1,5 +1,4 @@
 require './game.rb'
-require './player.rb'
 
 puts "welcome to Math War!"
 

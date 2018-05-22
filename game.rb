@@ -1,61 +1,58 @@
-require './player'
+require './player.rb'
+require './question.rb'
 
 class Game
   def initialize(player1Name, player2Name)
     @player1 = Player.new(player1Name)
     @player2 = Player.new(player2Name)
-    @current_players_turn = 1
+    @current_players_turn = rand(2)+1
   end
 
-  def generate_question(player)
-    num1 = rand(9)+1
-    num2 = rand(9)+1
-    operator_id = rand(3)+1
-
-
-    case operator_id
-    when 1
-      operator = 'plus'
-      answer = num1 + num2
-    when 2
-      operator = 'minus'
-      answer = num1 - num2
-    when 3
-      operator = 'multiplied by'
-      answer = num1 * num2
-    end
-
-
-    print "#{player.name}, What is #{num1} #{operator} #{num2}?  >"
-
-    player_answer = gets.chomp()
-
-    if player_answer.to_i == answer.to_i then
-      puts "#{player.name}... You are correct!!!"
+  def game_over?
+    if @player1.score == 0
+      puts "Game Over! #{@player2.name} Wins!!!"
+      true
+    elsif @player2.score == 0
+      puts "Game Over! #{@player1.name} Wins!!!"
+      true
     else
-      puts "#{player.name}... YOU ARE WRONGGGGGG!!!!!"
-      player.score -= 1
+      false
     end
   end
-
 
   def run
-    
     puts "Welcome #{@player1.name} and #{@player2.name} !"
+    sleep 1
+    puts
+    while !game_over?
+      if @current_players_turn == 1
+        question = Question.new(@player1.name)
+        puts question.ask_question
+        player_answer = gets.chomp
+        if question.correct_answer?(player_answer)
+          puts "#{@player1.name}, you are CORRECT!!"
+        else
+          puts "#{@player1.name}, you are WRONG!!"
+          @player1.subtract_point
+        end
+        @current_players_turn = 2
 
-    puts "scores are: #{@player1.name}: #{@player1.score}, #{@player2.name}: #{@player2.score}"
-
-    generate_question(@player1)
-    puts "scores are: #{@player1.name}: #{@player1.score}, #{@player2.name}: #{@player2.score}"
-
-
+      elsif @current_players_turn == 2
+        question = Question.new(@player2.name)
+        puts question.ask_question
+        player_answer = gets.chomp
+        if question.correct_answer?(player_answer)
+          puts "#{@player2.name}, you are CORRECT!!"
+        else
+          puts "#{@player2.name}, you are WRONG!!"
+          @player2.subtract_point
+        end
+        @current_players_turn = 1
+      end
+      sleep 1
+      puts "scores are: #{@player1.name}: #{@player1.score}, #{@player2.name}: #{@player2.score}"
+      puts
+    end
   end
-
 end
 
-#-----------------------------------
-
-
-
-
-# generate_question('ryan')
